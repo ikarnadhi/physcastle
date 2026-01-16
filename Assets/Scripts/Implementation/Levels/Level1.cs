@@ -1,20 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Implementation.Systems;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class Level1 : MonoBehaviour
+namespace Implementation.Levels
 {
-    public OpenDoor doorController;
-    public Collider targetCollider;
-
-    private void OnTriggerEnter(Collider other)
+    public class Level1 : MonoBehaviour
     {
-        if (other == targetCollider)
+        public OpenDoor doorController;
+        public Collider targetCollider;
+
+        private void OnTriggerEnter(Collider other)
         {
-            doorController.Open();
-            tipcontroller.jumpingtip();
+            if (other == targetCollider)
+            {
+                doorController.Open();
+                TipController.jumpingtip();
+            }
         }
     }
-
 }

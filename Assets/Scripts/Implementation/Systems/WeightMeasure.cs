@@ -1,59 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-public class WeightMeasure : MonoBehaviour
+namespace Implementation.Systems
 {
-    public float mass = 0;
-    public GameObject weightcounter;
-    public GameObject sphere;
-    int stuffcount = 0;
-    // Start is called before the first frame update
-    void Start()
+    public class WeightMeasure : MonoBehaviour
     {
-        
-    }
+        [FormerlySerializedAs("mass")]
+        public int totalMass = 0;
+        [FormerlySerializedAs("weightcounter")]
+        public GameObject weightCounter;
+        public GameObject sphere;
 
-    // Update is called once per frame
-    void Update()
-    {
+        private int _stuffCount = 0;
 
-    }
-
-    public void MeasureEnter()
-    {
-        Measure();
-        weightcounter.GetComponent<TextMesh>().text = mass + " kg";
-    }
-
-    public void MeasureExit()
-    {
-        Measure();
-        if (stuffcount <= 4)
-            mass = 0;
-        weightcounter.GetComponent<TextMesh>().text = mass + " kg";
-    }
-
-    void Measure()
-    {
-        Collider[] hitColliders = Physics.OverlapBox(sphere.transform.position, new Vector3(0.75f,5,0.75f));
-        stuffcount = hitColliders.Length;
-        
-        int i = 0;
-        float totalmass = 0;
-        while (i < hitColliders.Length)
+        public void MeasureEnter()
         {
-            if (hitColliders[i].GetComponent<Rigidbody>() && hitColliders[i].GetComponent<Rigidbody>().useGravity)
-            {
-                totalmass += hitColliders[i].GetComponent<Rigidbody>().mass;
-                /*Debug.Log(hitColliders[i].GetComponent<Rigidbody>().mass);*/
-            }
-            i++;
+            Measure();
+            weightCounter.GetComponent<TextMesh>().text = totalMass + " kg";
         }
-        mass = totalmass;
-    }
 
-    /*void OnCollisionEnter(Collision collision)
+        void Measure()
+        {
+            Collider[] hitColliders = Physics.OverlapBox(sphere.transform.position, new Vector3(0.75f, 5, 0.75f));
+            _stuffCount = hitColliders.Length;
+
+            var i = 0;
+            float totalmass = 0;
+            while (i < hitColliders.Length)
+            {
+                if (hitColliders[i].GetComponent<Rigidbody>() && hitColliders[i].GetComponent<Rigidbody>().useGravity)
+                {
+                    totalmass += hitColliders[i].GetComponent<Rigidbody>().mass;
+                    /*Debug.Log(hitColliders[i].GetComponent<Rigidbody>().mass);*/
+                }
+
+                i++;
+            }
+
+            totalMass = (int)totalmass;
+        }
+
+        /*void OnCollisionEnter(Collision collision)
     {
         mass = collision.rigidbody.mass;
     }
@@ -61,4 +48,5 @@ public class WeightMeasure : MonoBehaviour
     {
         mass = 0;
     }*/
+    }
 }

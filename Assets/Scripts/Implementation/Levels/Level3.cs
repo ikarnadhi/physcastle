@@ -1,28 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Core;
 using UnityEngine;
 
-public class level3 : MonoBehaviour
+namespace Implementation.Levels
 {
-    public GameObject wheel;
-    bool canTurn = false;
-    // Start is called before the first frame update
-    void Start()
+    public class Level3 : MonoBehaviour, IInteractable
     {
-        
-    }
+        public GameObject wheel;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(canTurn && Input.GetKeyUp(KeyCode.E))
+        private bool _canTurn = false;
+        private Rigidbody _wheelRigidbody;
+
+        // Update is called once per frame
+        private void Start()
         {
-            wheel.GetComponent<Rigidbody>().AddTorque(Vector3.forward * -50);
+            _wheelRigidbody = wheel.GetComponent<Rigidbody>();
         }
-    }
 
-    public void turnwheel(bool willTurn)
-    {
-        canTurn = willTurn;
+        private void Update()
+        {
+            if (_canTurn && Input.GetKeyUp(KeyCode.E))
+            {
+                _wheelRigidbody.AddTorque(Vector3.forward * -50);
+            }
+        }
+
+        public void OnReticuleEnter() => _canTurn = true;
+        public void OnReticuleExit() => _canTurn = false;
     }
 }

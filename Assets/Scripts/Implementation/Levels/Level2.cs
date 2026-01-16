@@ -1,38 +1,41 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
+﻿using Implementation.Systems;
+using UnityEngine;
 
-public class Level2 : MonoBehaviour
+namespace Implementation.Levels
 {
-    public WeightMeasure weighter1;
-    public WeightMeasure weighter2;
-    public float mass1 = 0;
-    public float mass2 = 0;
-    public float targetmass = 0;
-    public bool win = false;
-    public GameObject winLight;
-    public TextMesh comparerText;
-    public GameObject door;
-    private OpenDoor doorController;
-    public Vector2 doorTranslate;
-    string showtext;
-    // Start is called before the first frame update
-    void Start()
+    public class Level2 : MonoBehaviour
     {
-        winLight.SetActive(false);
-    }
+        public WeightMeasure weighter1;
+        public WeightMeasure weighter2;
+        public int mass1 = 0;
+        public int mass2 = 0;
+        public float targetmass = 0;
+        public bool win = false;
+        public GameObject winLight;
+        public TextMesh comparerText;
+        private OpenDoor _doorController;
 
-    // Update is called once per frame
-    void Update()
-    {
-        mass1 = weighter1.mass;
-        mass2 = weighter2.mass;
-        showtext = mass1 + " kg & " + mass2 + " kg";
-        comparerText.text = showtext;
-        if(mass1 == targetmass && mass2 == targetmass && !win)
+        string showtext;
+
+        // Start is called before the first frame update
+        private void Start()
         {
-            winLight.SetActive(true);
-            win = true;
-            doorController.Open();
+            winLight.SetActive(false);
+        }
+
+        // Update is called once per frame
+        private void Update()
+        {
+            mass1 = weighter1.totalMass;
+            mass2 = weighter2.totalMass;
+            showtext = mass1 + " kg & " + mass2 + " kg";
+            comparerText.text = showtext;
+            if (mass1 == mass2 && !win)
+            {
+                winLight.SetActive(true);
+                win = true;
+                _doorController.Open();
+            }
         }
     }
 }

@@ -1,54 +1,59 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
-public class OpenDoor : MonoBehaviour
+namespace Implementation.Systems
 {
-    public Transform targetTransform;
-    private Vector3 _oldPosition;
-    private Vector3 _targetPosition;
-    public float duration;
-    private float _timeElapsed;
-
-    private bool _thisOpening = false;
-    private bool _alreadyOpened = false;
-
-    void Start()
+    public class OpenDoor : MonoBehaviour
     {
-        _oldPosition = transform.position;
-        _targetPosition = targetTransform.position;
-    }
+        public Transform targetTransform;
+        private Vector3 _oldPosition;
+        private Vector3 _targetPosition;
+        public float duration;
+        private float _timeElapsed;
 
-    void Update()
-    {
-        if (_alreadyOpened) { return; }
+        private bool _thisOpening = false;
+        private bool _alreadyOpened = false;
 
-        if (_thisOpening)
+        void Start()
         {
-            MoveToTarget();
+            _oldPosition = transform.position;
+            _targetPosition = targetTransform.position;
         }
 
-        if (transform.position == _targetPosition)
+        void Update()
         {
-            _thisOpening = false;
-            _alreadyOpened = true;
-        }
-    }
+            if (_alreadyOpened)
+            {
+                return;
+            }
 
-    private void MoveToTarget()
-    {
-        if (_timeElapsed < duration)
-        {
-            transform.position = Vector3.Lerp(_oldPosition, _targetPosition, _timeElapsed / duration);
-            _timeElapsed += Time.deltaTime;
-        }
-        else
-        {
-            transform.position = _targetPosition;
-        }
-    }
+            if (_thisOpening)
+            {
+                MoveToTarget();
+            }
 
-    public void Open()
-    {
-        _thisOpening = true;
+            if (transform.position == _targetPosition)
+            {
+                _thisOpening = false;
+                _alreadyOpened = true;
+            }
+        }
+
+        private void MoveToTarget()
+        {
+            if (_timeElapsed < duration)
+            {
+                transform.position = Vector3.Lerp(_oldPosition, _targetPosition, _timeElapsed / duration);
+                _timeElapsed += Time.deltaTime;
+            }
+            else
+            {
+                transform.position = _targetPosition;
+            }
+        }
+
+        public void Open()
+        {
+            _thisOpening = true;
+        }
     }
 }

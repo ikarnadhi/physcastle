@@ -267,8 +267,8 @@ MonoBehaviour:
   mouseSens: 100
   playerBody: {fileID: 1506273558}
   flashlight: {fileID: 1764061462}
-  flashonlogo: {fileID: 235697187}
-  flashofflogo: {fileID: 1751448091}
+  flashOnLogo: {fileID: 235697187}
+  flashOffLogo: {fileID: 1751448091}
 --- !u!1001 &235697186
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1524,7 +1524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializedBakingSet: {fileID: 0}
-  sceneGUID: dd228c77b1ff2c447a214b8387790478
+  sceneGUID: eb95e2d3e897bd2488f645a0d17f1ed1
   obsoleteAsset: {fileID: 0}
   obsoleteCellSharedDataAsset: {fileID: 0}
   obsoleteCellSupportDataAsset: {fileID: 0}

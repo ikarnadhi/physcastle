@@ -1,84 +1,96 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Core;
+using Implementation.Systems;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class PickupObj : MonoBehaviour
+namespace Implementation.Core
 {
-    public float throwForce = 600;
-    Vector3 objectPos;
-    public float distance = 10;
-    public GameObject[] weightmeasurer;
-
-    public bool canHold = false;
-    public GameObject item;
-    public GameObject tempParent;
-    public bool isHolding = false;
-
-    // Update is called once per frame
-    void Update()
+    public class PickupObj : MonoBehaviour, IInteractable
     {
-        
-        float distance = Vector3.Distance(item.transform.position, tempParent.transform.position);
-        if(distance > 2f)
+        public float throwForce = 600;
+        public float maxHoldDistance = 2;
+
+        [FormerlySerializedAs("weightmeasurer")]
+        public GameObject[] weightMeasurer;
+
+        public GameObject item;
+        public GameObject tempParent;
+        public bool canHold;
+        public bool isHolding;
+
+        private Vector3 _objectPos;
+        private Rigidbody _itemRigidbody;
+
+        private void Start()
         {
-            isHolding = false;
+            _itemRigidbody = item.GetComponent<Rigidbody>();
         }
-        if (isHolding)
+
+        private void Update()
         {
-            canHold = false;
-            item.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-            item.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-            item.transform.SetParent(tempParent.transform);
-            if (Input.GetKeyUp(KeyCode.E))
+            var distance = Vector3.Distance(item.transform.position, tempParent.transform.position);
+
+            if (distance > maxHoldDistance)
             {
                 isHolding = false;
             }
-            if (Input.GetMouseButtonDown(0))
+
+            if (isHolding)
             {
-                item.GetComponent<Rigidbody>().AddForce(tempParent.transform.forward * throwForce);
-                isHolding = false;
+                canHold = false;
+                _itemRigidbody.linearVelocity = Vector3.zero;
+                _itemRigidbody.angularVelocity = Vector3.zero;
+                item.transform.SetParent(tempParent.transform);
+
+                if (Input.GetKeyUp(KeyCode.E))
+                {
+                    isHolding = false;
+                }
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _itemRigidbody.AddForce(tempParent.transform.forward * throwForce);
+                    isHolding = false;
+                }
             }
-            
-        }
-        else
-        {
-            objectPos = item.transform.position;
-            item.transform.SetParent(null);
-            item.GetComponent<Rigidbody>().useGravity = true;
-            item.transform.position = objectPos;
-        }
-        if (Input.GetKeyUp(KeyCode.E) && canHold && !isHolding)
-        {
-            isHolding = true;
-            item.GetComponent<Rigidbody>().useGravity = false;
-            item.GetComponent<Rigidbody>().detectCollisions = true;
-        }
-    }
-
-    public void togglecanHold(bool able)
-    {
-        canHold = able;
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.collider.gameObject.layer == 8)
-        {
-            foreach(GameObject x in weightmeasurer)
+            else
             {
-                x.GetComponent<WeightMeasure>().MeasureEnter();
+                _objectPos = item.transform.position;
+                item.transform.SetParent(null);
+                _itemRigidbody.useGravity = true;
+                item.transform.position = _objectPos;
             }
-        }   
-    }
 
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.collider.gameObject.layer == 8)
-        {
-            foreach (GameObject x in weightmeasurer)
+            if (Input.GetKeyUp(KeyCode.E) && canHold && !isHolding)
             {
-                x.GetComponent<WeightMeasure>().MeasureEnter();
+                isHolding = true;
+                _itemRigidbody.useGravity = false;
+                _itemRigidbody.detectCollisions = true;
             }
         }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.collider.gameObject.layer != 8) return; // only check for objects in layer 8
+
+            foreach (var obj in weightMeasurer)
+            {
+                obj.GetComponent<WeightMeasure>().MeasureEnter();
+            }
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.collider.gameObject.layer != 8) return; // only check for objects in layer 8
+
+            foreach (var obj in weightMeasurer)
+            {
+                obj.GetComponent<WeightMeasure>().MeasureEnter();
+            }
+        }
+
+        public void OnReticuleEnter() => canHold = true;
+
+        public void OnReticuleExit() => canHold = false;
     }
 }

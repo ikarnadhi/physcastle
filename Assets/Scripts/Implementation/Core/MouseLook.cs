@@ -1,56 +1,70 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-public class MouseLook : MonoBehaviour
+namespace Implementation.Core
 {
-    public float mouseSens = 100f;
-    public Transform Playerbody;
-    float xRot = 0;
-    public GameObject flashlight;
-    public GameObject flashonlogo;
-    public GameObject flashofflogo;
-    bool flashon = false;
-
-    // Start is called before the first frame update
-    void Start()
+    public class MouseLook : MonoBehaviour
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+        public float mouseSens = 100f;
 
-    // Update is called once per frame
-    void Update()
-    {
-        updateLook();
-        if (Input.GetKeyUp(KeyCode.F))
+        [FormerlySerializedAs("PlayerBody")]
+        [FormerlySerializedAs("Playerbody")]
+        public Transform playerBody;
+
+        public GameObject flashlight;
+
+        [FormerlySerializedAs("flashonlogo")]
+        public GameObject flashOnLogo;
+
+        [FormerlySerializedAs("flashofflogo")]
+        public GameObject flashOffLogo;
+
+        private float _xRot = 0;
+        private bool _isFlashlightOn;
+
+        private void Start()
         {
-            if (!flashon)
-                flashon = true;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            _isFlashlightOn = false;
+        }
+
+        private void Update()
+        {
+            UpdateLook();
+            UpdateFlashlight();
+        }
+
+        private void UpdateFlashlight()
+        {
+            if (Input.GetKeyUp(KeyCode.F))
+            {
+                _isFlashlightOn = !_isFlashlightOn;
+            }
+
+            if (_isFlashlightOn)
+            {
+                flashlight.SetActive(true);
+                flashOnLogo.SetActive(true);
+                flashOffLogo.SetActive(false);
+            }
             else
-                flashon = false;
+            {
+                flashlight.SetActive(false);
+                flashOnLogo.SetActive(false);
+                flashOffLogo.SetActive(true);
+            }
         }
-        if (flashon)
-        {
-            flashlight.SetActive(true);
-            flashonlogo.SetActive(true);
-            flashofflogo.SetActive(false);
-        }
-        else
-        {
-            flashlight.SetActive(false);
-            flashonlogo.SetActive(false);
-            flashofflogo.SetActive(true);
-        }
-    }
 
-    void updateLook()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
-        Playerbody.Rotate(Vector3.up * mouseX);
-        xRot -= mouseY;
-        xRot = Mathf.Clamp(xRot, -90f, 90f);
-        transform.localRotation = Quaternion.Euler(xRot, 0, 0);
+        private void UpdateLook()
+        {
+            var mouseX = Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
+            var mouseY = Input.GetAxis("Mouse Y") * mouseSens * Time.deltaTime;
+            playerBody.rotation = Quaternion.Euler(0, playerBody.eulerAngles.y + mouseX, 0);
+            // playerBody.Rotate(Vector3.up * mouseX);
+            _xRot -= mouseY;
+            _xRot = Mathf.Clamp(_xRot, -90f, 90f);
+            transform.localRotation = Quaternion.Euler(_xRot, 0, 0);
+        }
     }
 }

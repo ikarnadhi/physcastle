@@ -1,62 +1,64 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
-public class PlayerMovement : MonoBehaviour
+namespace Implementation.Core
 {
-    public CharacterController controls;
-
-    public float speed = 12f;
-    public float grav = -9.81f;
-    public float jumph = 1f;
-
-    public Transform groundcheck;
-    public float groundDistance = 0.4f;
-    public LayerMask groundMask;
-
-    
-    Vector3 velocity;
-    bool isgrounded;
-
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerMovement : MonoBehaviour
     {
-        
-    }
+        [FormerlySerializedAs("controls")]
+        public CharacterController charController;
 
-    // Update is called once per frame
-    void Update()
-    {
-        updateLocation();
-    }
+        public float speed = 12f;
 
-    void updateLocation()
-    {
-        isgrounded = Physics.CheckSphere(groundcheck.position, groundDistance, groundMask);
+        [FormerlySerializedAs("grav")]
+        public float gravity = -9.81f;
 
-        if (isgrounded && velocity.y < 0)
+        [FormerlySerializedAs("jumph")]
+        public float jumpHeight = 1f;
+
+        [FormerlySerializedAs("groundcheck")]
+        public Transform groundCheck;
+
+        public float groundDistance = 0.4f;
+        public LayerMask groundMask;
+
+        private Vector3 _velocity;
+        private bool _isGrounded;
+
+        // Update is called once per frame
+        private void Update()
         {
-            velocity.y = -2f;
-        }
-        if (velocity.x > 0 || velocity.z > 0)
-        {
-
+            UpdateLocation();
         }
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        Vector3 move = transform.right * x + transform.forward * z;
-
-        controls.Move(move * speed * Time.deltaTime);
-
-        if (Input.GetButtonDown("Jump") && isgrounded)
+        private void UpdateLocation()
         {
-            velocity.y = Mathf.Sqrt(jumph * -2f * grav);
+            _isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+            if (_isGrounded && _velocity.y < 0)
+            {
+                _velocity.y = -2f;
+            }
+
+            if (_velocity.x > 0 || _velocity.z > 0)
+            {
+            }
+
+            var x = Input.GetAxis("Horizontal");
+            var z = Input.GetAxis("Vertical");
+
+            var moveVector = transform.right * x + transform.forward * z;
+
+            charController.Move(moveVector * (speed * Time.deltaTime));
+
+            if (Input.GetButtonDown("Jump") && _isGrounded)
+            {
+                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+
+            _velocity.y += gravity * Time.deltaTime;
+
+            charController.Move(_velocity * Time.deltaTime);
         }
-
-        velocity.y += grav * Time.deltaTime;
-
-        controls.Move(velocity * Time.deltaTime);
     }
 }
