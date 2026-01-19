@@ -18,9 +18,6 @@ namespace Implementation.Core
             var ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (!Physics.Raycast(ray, out var hit, 2f)) return; // ignore if hit fails
-
-            Debug.Log($"Raycast hit: {hit.transform}");
-            Debug.Log($"Raycast hit: {hit.transform.name}");
             
             if (!hit.transform.TryGetComponent(out IInteractable interactable))
             {
